@@ -14,8 +14,8 @@ The mega cabinet organizes 100 games into 5 cohesive categories:
 * **🧱 Tetris**: Classic real-time tile matching! Fit falling tetrominoes together to clear complete horizontal lines. Features holding slots, next block previews, level speeds, and ghost piece shadows.
 * **👽 Space Invaders**: Real-time arcade shooter! Defend your shield bunkers, glide your defender ship, and blast descending swarms of invaders.
 * **🐍 Snake**: Control a neon-green snake to consume glowing red food. Grows longer and speeds up as you eat.
-* **🏓 Pong**: Bounce the ball past the computer AI's paddle with physics acceleration and bounce spin angles.
-* **👾 Moon Buggy, AsciiPatrol, Bastet, Pipes, CMatrix, and 15 more action titles!**
+* **Tron**: Real-time light-cycle duels with persistent energy trails and accelerating survival pressure.
+* **👾 Moon Buggy, AsciiPatrol, Bastet, Pipes, CMatrix, and more action titles!**
 
 ### 2. 🗡️ Roguelikes & RPGs
 * ** Rogue / Roguelike**: Turn-based RPG adventure. Wander procedurally generated rooms, pick up weapons and shields, drink potions, slay trolls, level up stats, and descend down the stairs.
@@ -33,11 +33,12 @@ The mega cabinet organizes 100 games into 5 cohesive categories:
 * **🧙 Phantasia & Zork**: Explore legendary fantasy realms, cast spells, gather artifacts, and level up.
 
 ### 5. 🧠 Brain & Speed Utilities
-* **🔢 2048**: Slide and merge matching power-of-2 values on a grid.
+* **🔢 2048 / Term2048**: Slide and merge matching power-of-2 values on a grid.
 * **💣 Minesweeper**: Pure logic grid deduction. Dig safe spaces, flag mines, and trigger cascading reveals.
+* **Nudoku / Sudoku**: Terminal number-grid logic puzzles for fast keyboard solving.
 * **🔤 Wordle**: Six attempts to guess the secret 5-letter word with live status coloring.
 * **🪓 Hangman**: Traditional letter deduction word game with dynamic gallows ASCII illustrations.
-* **⚡ Primes, Morse, BCD, Caesar Cipher, Rot13, and 10 more speed-calculation speed challenges!**
+* **⚡ Primes, Morse, BCD, Caesar Cipher, Rot13, and other speed-calculation challenges!**
 
 ---
 
@@ -66,7 +67,13 @@ The compiled binary will be placed at `./target/release/rust-project-one` (or `r
 * **Left / Right Arrow (or A / D)**: Switch between genre categories.
 * **Up / Down Arrow (or W / S)**: Navigate the paginated game selection list.
 * **Enter / Spacebar**: Launch and play the highlighted game.
+* **T**: Open theme settings.
 * **Escape / Q**: Exit the retro arcade cabinet.
+
+### Theme Settings
+* **Left / Right Arrow (or A / D)**: Cycle through Classic Neon, Amber CRT, Matrix, Ocean, and Monochrome themes.
+* **Enter / Escape / T**: Return to the cabinet launcher.
+* Theme choices are saved to `arcade_settings.json` in the active directory.
 
 ### 🧱 Flagship Game Controls
 
@@ -127,8 +134,8 @@ The compiled binary will be placed at `./target/release/rust-project-one` (or `r
 * **P**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
-#### 🏓 Pong Controls
-* **Up / Down Arrow (or W / S)**: Move player paddle up/down in real-time.
+#### Tron Controls
+* **Arrow Keys / WASD**: Turn the light cycle without reversing into your own trail.
 * **P**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
@@ -137,15 +144,18 @@ The compiled binary will be placed at `./target/release/rust-project-one` (or `r
 ## 🏆 Local High Score Tracking
 Scores are persistent! When you finish a game (or return to the menu), top scores are compared, saved, and serialized in `highscores.json` in the active directory. The Arcade launcher displays your high scores on the game preview screen in real-time.
 
+Theme settings are also persistent and are stored in `arcade_settings.json` beside the high-score file.
+
 ---
 
 ## 🎨 Premium Polish Details
 * **Flicker-Free double-buffering**: Using `ratatui`'s in-memory layout system which only outputs diff characters, keeping drawing extremely smooth during rapid real-time updates.
 * **Category Navigation**: 5 distinct pages separating action arcade, rogelikes, puzzles, text stories, and utilities.
+* **Theme Settings**: Press `T` from the launcher to switch between five color palettes without leaving the terminal.
 * **First-Click Safety (Minesweeper)**: Mines are only generated *after* your first dig, ensuring a safe start pocket is opened.
 * **Wall Kicks (Tetris)**: Smooth rotations near boundary walls rather than blocking rotation completely.
 * **Degrading Barriers (Space Invaders)**: Bunker blocks take up to three hits and degrade visually (`██` -> `▒▒` -> `░░` -> blank).
 * **Bump Combat & Combat Logs (Roguelike)**: Turn-based interactions write colored messages (damage dealt, items grabbed, level up) dynamically into a scrollable sidebar text box.
 * **Aesthetic Alphabet tracker (Wordle)**: Active keyboard status matrix helps you easily keep track of correct, misplaced, and dead letters.
 * **AI Salvo Predictions (Battleship)**: Enemy computer AI utilizes adaptive search methods to target surrounding fields after scoring a ship hit.
-* **Physics Bounce Angle (Pong)**: Bouncing balls accelerate and adjust spin vectors depending on where on the paddle the ball collides.
+* **Tron Light Trails**: Real-time cycle movement leaves persistent paths that become hazards as the duel accelerates.

@@ -55,6 +55,7 @@ pub mod moria;
 pub mod morse;
 pub mod nethack;
 pub mod ninja;
+pub mod nudoku;
 pub mod number;
 pub mod omega;
 pub mod othello;
@@ -63,7 +64,6 @@ pub mod phantasia;
 pub mod pig;
 pub mod pipes;
 pub mod pokete;
-pub mod pong;
 pub mod primes;
 pub mod progress95;
 pub mod quiz;
@@ -82,12 +82,14 @@ pub mod solitaire;
 pub mod space_invaders;
 pub mod sudoku;
 pub mod teachgammon;
+pub mod term2048;
 pub mod tetris;
 pub mod tetro;
 pub mod tggw;
 pub mod tint;
 pub mod tome;
 pub mod trek;
+pub mod tron;
 pub mod vitetris;
 pub mod wordle;
 pub mod worm;
@@ -161,6 +163,7 @@ pub enum GameType {
     Morse,
     Nethack,
     Ninja,
+    Nudoku,
     Number,
     Omega,
     Othello,
@@ -169,7 +172,6 @@ pub enum GameType {
     Pig,
     Pipes,
     Pokete,
-    Pong,
     Primes,
     ProgressCLI95,
     Quiz,
@@ -188,12 +190,14 @@ pub enum GameType {
     SpaceInvaders,
     Sudoku,
     Teachgammon,
+    Term2048,
     Tetris,
     Tetro,
     Tggw,
     Tint,
     Tome,
     Trek,
+    Tron,
     Vitetris,
     Wordle,
     Worm,
@@ -264,6 +268,7 @@ impl GameType {
             GameType::Morse => "Morse",
             GameType::Nethack => "Nethack",
             GameType::Ninja => "Ninja",
+            GameType::Nudoku => "Nudoku",
             GameType::Number => "Number",
             GameType::Omega => "Omega",
             GameType::Othello => "Othello",
@@ -272,7 +277,6 @@ impl GameType {
             GameType::Pig => "Pig",
             GameType::Pipes => "Pipes",
             GameType::Pokete => "Pokete",
-            GameType::Pong => "Pong",
             GameType::Primes => "Primes",
             GameType::ProgressCLI95 => "ProgressCLI95",
             GameType::Quiz => "Quiz",
@@ -291,12 +295,14 @@ impl GameType {
             GameType::SpaceInvaders => "Space Invaders",
             GameType::Sudoku => "Sudoku",
             GameType::Teachgammon => "Teachgammon",
+            GameType::Term2048 => "Term2048",
             GameType::Tetris => "Tetris",
             GameType::Tetro => "Tetro",
             GameType::Tggw => "The Ground Gives Way",
             GameType::Tint => "Tint",
             GameType::Tome => "Tales of Maj'Eyal",
             GameType::Trek => "Trek",
+            GameType::Tron => "Tron",
             GameType::Vitetris => "Vitetris",
             GameType::Wordle => "Wordle",
             GameType::Worm => "Worm",

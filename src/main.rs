@@ -1,17 +1,18 @@
-mod high_scores;
-mod games;
 mod arcade;
+mod games;
+mod high_scores;
+mod settings;
 
-use std::io;
-use std::time::{Duration, Instant};
-use std::panic;
+use arcade::ArcadeConsole;
 use crossterm::{
     event::{self, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
-use arcade::ArcadeConsole;
+use std::io;
+use std::panic;
+use std::time::{Duration, Instant};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 1. Establish custom panic hook to restore the terminal on unexpected crashes
@@ -26,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
-    
+
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;

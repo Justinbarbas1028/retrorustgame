@@ -203,7 +203,7 @@ impl Game for PhantasiaGame {
         let room_inner = room_block.inner(main_split[0]);
         frame.render_widget(room_block, main_split[0]);
 
-        let mut room_text = vec![
+        let room_text = vec![
             Line::from(""),
             Line::from(Span::styled(current_room_desc, Style::default().fg(Color::White))),
             Line::from(""),

@@ -15,7 +15,6 @@ pub struct PrimesGame {
     target: u32,
     player_input: String,
     score: u32,
-    high_score: u32,
     game_over: bool,
     paused: bool,
     time_limit: f32,
@@ -30,7 +29,6 @@ impl PrimesGame {
             target: 0,
             player_input: String::new(),
             score: 0,
-            high_score: 0,
             game_over: false,
             paused: false,
             time_limit: 15.0,
@@ -116,6 +114,9 @@ impl Game for PrimesGame {
         }
 
         match key {
+            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
+                return GameCommand::Exit;
+            }
             KeyCode::Char(c) => {
                 if c.is_digit(10) {
                     self.player_input.push(c);
@@ -126,9 +127,6 @@ impl Game for PrimesGame {
             }
             KeyCode::Enter => {
                 self.submit();
-            }
-            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
-                return GameCommand::Exit;
             }
             _ => {}
         }

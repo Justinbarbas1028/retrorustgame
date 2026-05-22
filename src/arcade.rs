@@ -1,114 +1,42 @@
-use std::time::Duration;
-use ratatui::{
-    Frame,
-    layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
-    text::{Line, Span},
-    widgets::{Block, Borders, BorderType, Paragraph, Wrap, Clear},
-};
-use crossterm::event::KeyCode;
-use crate::high_scores::HighScores;
 use crate::games::{
-    Game, GameType, GameCommand,
-    adom::AdomGame,
-    adventure::AdventureGame,
-    alienrl::AlienrlGame,
-    allure_stars::AllureStarsGame,
-    angband::AngbandGame,
-    arithmetic::ArithmeticGame,
-    ascii_patrol::AsciiPatrolGame,
-    ascii_sector::AsciiSectorGame,
-    atc::AtcGame,
-    backgammon::BackgammonGame,
-    bastet::BastetGame,
-    battleship::BattleshipGame,
-    battlestar::BattlestarGame,
-    bcd::BcdGame,
-    blackjack::BlackjackGame,
-    boggle::BoggleGame,
-    brogue::BrogueGame,
-    caesar::CaesarGame,
-    canfield::CanfieldGame,
-    cataclysm::CataclysmGame,
-    caves_of_qud::CavesOfQudGame,
-    cfscores::CfscoresGame,
-    checkers::CheckersGame,
-    chess::ChessGame,
-    cmatrix::CmatrixGame,
-    countmail::CountmailGame,
-    cribbage::CribbageGame,
-    ctris::CtrisGame,
-    dab::DabGame,
-    dcss::DcssGame,
-    doomrl::DoomrlGame,
-    dwarf_fortress::DwarfFortressGame,
-    end_of_eden::EndOfEdenGame,
-    firewall::FirewallGame,
-    freecell::FreecellGame,
-    game_2048::Game2048,
-    go_fish::GoFishGame,
-    go_game::GoGameGame,
-    gomoku::GomokuGame,
-    gorched::GorchedGame,
-    greed::GreedGame,
-    hack::HackGame,
-    hangman::HangmanGame,
-    harmonist::HarmonistGame,
-    hunt::HuntGame,
-    larn::LarnGame,
-    mastermind::MastermindGame,
-    mazeventure::MazeventureGame,
-    mille::MilleGame,
-    minesweeper::MinesweeperGame,
-    momodora::MomodoraGame,
-    monopoly::MonopolyGame,
-    moon_buggy::MoonBuggyGame,
-    moria::MoriaGame,
-    morse::MorseGame,
-    nethack::NetHackGame,
-    ninja::NinjaGame,
-    number::NumberGame,
-    omega::OmegaGame,
-    othello::OthelloGame,
-    pacman::PacmanGame,
-    phantasia::PhantasiaGame,
-    pig::PigGame,
-    pipes::PipesGame,
-    pokete::PoketeGame,
-    pong::PongGame,
-    primes::PrimesGame,
-    progress95::ProgressCLI95Game,
-    quiz::QuizGame,
-    rain::RainGame,
-    robots::RobotsGame,
-    roguelike::RoguelikeGame,
-    rot13::Rot13Game,
-    rps::RpsGame,
-    sail::SailGame,
-    shoot_em::ShootEmGame,
-    sil::SilGame,
-    snake::SnakeGame,
-    snscore::SnscoreGame,
-    sokoban::SokobanGame,
-    solitaire::SolitaireGame,
-    space_invaders::SpaceInvadersGame,
-    sudoku::SudokuGame,
-    teachgammon::TeachgammonGame,
-    tetris::TetrisGame,
-    tetro::TetroGame,
-    tggw::TggwGame,
-    tint::TintGame,
-    tome::TomeGame,
-    trek::TrekGame,
-    vitetris::VitetrisGame,
-    wordle::WordleGame,
-    worm::WormGame,
-    wump::WumpGame,
-    wumpus::WumpusGame,
-    yahtzee::YahtzeeGame,
-    zangband::ZangbandGame,
-    zork::ZorkGame,
+    adom::AdomGame, adventure::AdventureGame, alienrl::AlienrlGame, allure_stars::AllureStarsGame,
+    angband::AngbandGame, arithmetic::ArithmeticGame, ascii_patrol::AsciiPatrolGame,
+    ascii_sector::AsciiSectorGame, atc::AtcGame, backgammon::BackgammonGame, bastet::BastetGame,
+    battleship::BattleshipGame, battlestar::BattlestarGame, bcd::BcdGame, blackjack::BlackjackGame,
+    boggle::BoggleGame, brogue::BrogueGame, caesar::CaesarGame, canfield::CanfieldGame,
+    cataclysm::CataclysmGame, caves_of_qud::CavesOfQudGame, cfscores::CfscoresGame,
+    checkers::CheckersGame, chess::ChessGame, cmatrix::CmatrixGame, countmail::CountmailGame,
+    cribbage::CribbageGame, ctris::CtrisGame, dab::DabGame, dcss::DcssGame, doomrl::DoomrlGame,
+    dwarf_fortress::DwarfFortressGame, end_of_eden::EndOfEdenGame, firewall::FirewallGame,
+    freecell::FreecellGame, game_2048::Game2048, go_fish::GoFishGame, go_game::GoGameGame,
+    gomoku::GomokuGame, gorched::GorchedGame, greed::GreedGame, hack::HackGame,
+    hangman::HangmanGame, harmonist::HarmonistGame, hunt::HuntGame, larn::LarnGame,
+    mastermind::MastermindGame, mazeventure::MazeventureGame, mille::MilleGame,
+    minesweeper::MinesweeperGame, momodora::MomodoraGame, monopoly::MonopolyGame,
+    moon_buggy::MoonBuggyGame, moria::MoriaGame, morse::MorseGame, nethack::NetHackGame,
+    ninja::NinjaGame, nudoku::NudokuGame, number::NumberGame, omega::OmegaGame, othello::OthelloGame,
+    pacman::PacmanGame, phantasia::PhantasiaGame, pig::PigGame, pipes::PipesGame,
+    pokete::PoketeGame, primes::PrimesGame, progress95::ProgressCLI95Game,
+    quiz::QuizGame, rain::RainGame, robots::RobotsGame, roguelike::RoguelikeGame, rot13::Rot13Game,
+    rps::RpsGame, sail::SailGame, shoot_em::ShootEmGame, sil::SilGame, snake::SnakeGame,
+    snscore::SnscoreGame, sokoban::SokobanGame, solitaire::SolitaireGame,
+    space_invaders::SpaceInvadersGame, sudoku::SudokuGame, teachgammon::TeachgammonGame,
+    term2048::Term2048Game, tetris::TetrisGame, tetro::TetroGame, tggw::TggwGame, tint::TintGame,
+    tome::TomeGame, trek::TrekGame, tron::TronGame, vitetris::VitetrisGame, wordle::WordleGame, worm::WormGame, wump::WumpGame,
+    wumpus::WumpusGame, yahtzee::YahtzeeGame, zangband::ZangbandGame, zork::ZorkGame, Game,
+    GameCommand, GameType,
 };
+use crate::high_scores::HighScores;
+use crate::settings::{ArcadeSettings, Theme};
+use crossterm::event::KeyCode;
+use ratatui::{
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
+    style::{Modifier, Style},
+    text::{Line, Span},
+    widgets::{Block, BorderType, Borders, Clear, Paragraph, Wrap},
+    Frame,
+};
+use std::time::Duration;
 
 pub struct ArcadeConsole {
     categories: Vec<&'static str>,
@@ -116,9 +44,63 @@ pub struct ArcadeConsole {
     active_games: Vec<GameType>,
     selected_index: usize,
     scroll_offset: usize,
+    screen: ArcadeScreen,
+    settings: ArcadeSettings,
+    persist_settings: bool,
     active_game: Option<Box<dyn Game>>,
     active_game_type: Option<GameType>,
     high_scores: HighScores,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ArcadeScreen {
+    Menu,
+    Settings,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn menu_theme_settings_can_be_opened_cycled_and_closed() {
+        let mut arcade = ArcadeConsole::new_with_settings(ArcadeSettings::default());
+
+        assert_eq!(arcade.screen, ArcadeScreen::Menu);
+        assert_eq!(arcade.settings.theme, Theme::ClassicNeon);
+
+        assert!(!arcade.handle_input(KeyCode::Char('t')));
+        assert_eq!(arcade.screen, ArcadeScreen::Settings);
+
+        assert!(!arcade.handle_input(KeyCode::Right));
+        assert_eq!(arcade.settings.theme, Theme::AmberCrt);
+
+        assert!(!arcade.handle_input(KeyCode::Left));
+        assert_eq!(arcade.settings.theme, Theme::ClassicNeon);
+
+        assert!(!arcade.handle_input(KeyCode::Enter));
+        assert_eq!(arcade.screen, ArcadeScreen::Menu);
+    }
+
+    #[test]
+    fn catalog_exposes_the_full_requested_one_hundred_games() {
+        let categories = [
+            "Action & Arcade",
+            "Roguelikes & RPGs",
+            "Board & Card Games",
+            "Text Adventures",
+            "Brain & Speed Utilities",
+        ];
+        let games: Vec<_> = categories
+            .iter()
+            .flat_map(|category| ArcadeConsole::get_games_for_category(category))
+            .collect();
+
+        assert_eq!(games.len(), 100);
+        assert!(games.contains(&GameType::Nudoku));
+        assert!(games.contains(&GameType::Term2048));
+        assert!(games.contains(&GameType::Tron));
+    }
 }
 
 impl Default for ArcadeConsole {
@@ -129,6 +111,12 @@ impl Default for ArcadeConsole {
 
 impl ArcadeConsole {
     pub fn new() -> Self {
+        let mut arcade = Self::new_with_settings(ArcadeSettings::load());
+        arcade.persist_settings = true;
+        arcade
+    }
+
+    pub fn new_with_settings(settings: ArcadeSettings) -> Self {
         let categories = vec![
             "Action & Arcade",
             "Roguelikes & RPGs",
@@ -144,6 +132,9 @@ impl ArcadeConsole {
             active_games,
             selected_index: 0,
             scroll_offset: 0,
+            screen: ArcadeScreen::Menu,
+            settings,
+            persist_settings: false,
             active_game: None,
             active_game_type: None,
             high_scores: HighScores::load(),
@@ -152,11 +143,116 @@ impl ArcadeConsole {
 
     fn get_games_for_category(category: &str) -> Vec<GameType> {
         match category {
-        "Action & Arcade" => vec![GameType::AsciiPatrol, GameType::Bastet, GameType::Cmatrix, GameType::Ctris, GameType::Firewall, GameType::Gorched, GameType::Momodora, GameType::MoonBuggy, GameType::Ninja, GameType::Pacman, GameType::Pipes, GameType::Pong, GameType::ProgressCLI95, GameType::Rain, GameType::ShootEm, GameType::Snake, GameType::SpaceInvaders, GameType::Tetris, GameType::Tetro, GameType::Tint, GameType::Vitetris, GameType::Worm],
-        "Roguelikes & RPGs" => vec![GameType::Adom, GameType::Alienrl, GameType::AllureStars, GameType::Angband, GameType::AsciiSector, GameType::Atc, GameType::Brogue, GameType::Cataclysm, GameType::CavesOfQud, GameType::Dcss, GameType::Doomrl, GameType::DwarfFortress, GameType::Greed, GameType::Hack, GameType::Harmonist, GameType::Hunt, GameType::Larn, GameType::Mazeventure, GameType::Moria, GameType::Nethack, GameType::Omega, GameType::Pokete, GameType::Robots, GameType::Roguelike, GameType::Sail, GameType::Sil, GameType::Sokoban, GameType::Sudoku, GameType::Tggw, GameType::Tome, GameType::Trek, GameType::Wump, GameType::Wumpus, GameType::Zangband],
-        "Board & Card Games" => vec![GameType::Backgammon, GameType::Battleship, GameType::Blackjack, GameType::Boggle, GameType::Canfield, GameType::Checkers, GameType::Chess, GameType::Cribbage, GameType::Dab, GameType::EndOfEden, GameType::Freecell, GameType::GoFish, GameType::GoGame, GameType::Gomoku, GameType::Mastermind, GameType::Mille, GameType::Monopoly, GameType::Othello, GameType::Pig, GameType::Rps, GameType::Solitaire, GameType::Teachgammon, GameType::Yahtzee],
-        "Text Adventures" => vec![GameType::Adventure, GameType::Battlestar, GameType::Phantasia, GameType::Zork],
-        "Brain & Speed Utilities" => vec![GameType::Arithmetic, GameType::Bcd, GameType::Caesar, GameType::Cfscores, GameType::Countmail, GameType::Game2048, GameType::Hangman, GameType::Minesweeper, GameType::Morse, GameType::Number, GameType::Primes, GameType::Quiz, GameType::Rot13, GameType::Snscore, GameType::Wordle],
+            "Action & Arcade" => vec![
+                GameType::AsciiPatrol,
+                GameType::Bastet,
+                GameType::Cmatrix,
+                GameType::Ctris,
+                GameType::Firewall,
+                GameType::Gorched,
+                GameType::Momodora,
+                GameType::MoonBuggy,
+                GameType::Ninja,
+                GameType::Pacman,
+                GameType::Pipes,
+                GameType::ProgressCLI95,
+                GameType::Rain,
+                GameType::ShootEm,
+                GameType::Snake,
+                GameType::SpaceInvaders,
+                GameType::Tetris,
+                GameType::Tetro,
+                GameType::Tint,
+                GameType::Tron,
+                GameType::Vitetris,
+                GameType::Worm,
+            ],
+            "Roguelikes & RPGs" => vec![
+                GameType::Adom,
+                GameType::Alienrl,
+                GameType::AllureStars,
+                GameType::Angband,
+                GameType::AsciiSector,
+                GameType::Atc,
+                GameType::Brogue,
+                GameType::Cataclysm,
+                GameType::CavesOfQud,
+                GameType::Dcss,
+                GameType::Doomrl,
+                GameType::DwarfFortress,
+                GameType::Greed,
+                GameType::Hack,
+                GameType::Harmonist,
+                GameType::Hunt,
+                GameType::Larn,
+                GameType::Mazeventure,
+                GameType::Moria,
+                GameType::Nethack,
+                GameType::Omega,
+                GameType::Pokete,
+                GameType::Robots,
+                GameType::Roguelike,
+                GameType::Sail,
+                GameType::Sil,
+                GameType::Sokoban,
+                GameType::Sudoku,
+                GameType::Tggw,
+                GameType::Tome,
+                GameType::Trek,
+                GameType::Wump,
+                GameType::Wumpus,
+                GameType::Zangband,
+            ],
+            "Board & Card Games" => vec![
+                GameType::Backgammon,
+                GameType::Battleship,
+                GameType::Blackjack,
+                GameType::Boggle,
+                GameType::Canfield,
+                GameType::Checkers,
+                GameType::Chess,
+                GameType::Cribbage,
+                GameType::Dab,
+                GameType::EndOfEden,
+                GameType::Freecell,
+                GameType::GoFish,
+                GameType::GoGame,
+                GameType::Gomoku,
+                GameType::Mastermind,
+                GameType::Mille,
+                GameType::Monopoly,
+                GameType::Othello,
+                GameType::Pig,
+                GameType::Rps,
+                GameType::Solitaire,
+                GameType::Teachgammon,
+                GameType::Yahtzee,
+            ],
+            "Text Adventures" => vec![
+                GameType::Adventure,
+                GameType::Battlestar,
+                GameType::Phantasia,
+                GameType::Zork,
+            ],
+            "Brain & Speed Utilities" => vec![
+                GameType::Arithmetic,
+                GameType::Bcd,
+                GameType::Caesar,
+                GameType::Cfscores,
+                GameType::Countmail,
+                GameType::Game2048,
+                GameType::Hangman,
+                GameType::Minesweeper,
+                GameType::Morse,
+                GameType::Nudoku,
+                GameType::Number,
+                GameType::Primes,
+                GameType::Quiz,
+                GameType::Rot13,
+                GameType::Snscore,
+                GameType::Term2048,
+                GameType::Wordle,
+            ],
             _ => vec![],
         }
     }
@@ -220,6 +316,7 @@ impl ArcadeConsole {
             GameType::Morse => Box::new(MorseGame::new()),
             GameType::Nethack => Box::new(NetHackGame::new()),
             GameType::Ninja => Box::new(NinjaGame::new()),
+            GameType::Nudoku => Box::new(NudokuGame::new()),
             GameType::Number => Box::new(NumberGame::new()),
             GameType::Omega => Box::new(OmegaGame::new()),
             GameType::Othello => Box::new(OthelloGame::new()),
@@ -228,7 +325,6 @@ impl ArcadeConsole {
             GameType::Pig => Box::new(PigGame::new()),
             GameType::Pipes => Box::new(PipesGame::new()),
             GameType::Pokete => Box::new(PoketeGame::new()),
-            GameType::Pong => Box::new(PongGame::new()),
             GameType::Primes => Box::new(PrimesGame::new()),
             GameType::ProgressCLI95 => Box::new(ProgressCLI95Game::new()),
             GameType::Quiz => Box::new(QuizGame::new()),
@@ -247,12 +343,14 @@ impl ArcadeConsole {
             GameType::SpaceInvaders => Box::new(SpaceInvadersGame::new()),
             GameType::Sudoku => Box::new(SudokuGame::new()),
             GameType::Teachgammon => Box::new(TeachgammonGame::new()),
+            GameType::Term2048 => Box::new(Term2048Game::new()),
             GameType::Tetris => Box::new(TetrisGame::new()),
             GameType::Tetro => Box::new(TetroGame::new()),
             GameType::Tggw => Box::new(TggwGame::new()),
             GameType::Tint => Box::new(TintGame::new()),
             GameType::Tome => Box::new(TomeGame::new()),
             GameType::Trek => Box::new(TrekGame::new()),
+            GameType::Tron => Box::new(TronGame::new()),
             GameType::Vitetris => Box::new(VitetrisGame::new()),
             GameType::Wordle => Box::new(WordleGame::new()),
             GameType::Worm => Box::new(WormGame::new()),
@@ -551,7 +649,11 @@ impl ArcadeConsole {
                 "Fast-paced real-time retro arcade action! Dodge obstacles, shoot projectiles, time your jumps, and survive to score big.",
                 "Jump: W / Space / Up  •  Fire: F / Enter  •  Restart: R  •  Quit: Escape",
             ),
-            GameType::Number => (
+            GameType::Nudoku => (
+                vec!["  +-----------------------------------------+", "  |                 NUDOKU                  |", "  +-----------------------------------------+"],
+                "A terminal sudoku variant with grid navigation, number entry, and puzzle-solving pressure in the retro cabinet style.",
+                "Move Cursor: Arrow Keys / WASD  -  Enter Number: 1-9  -  Restart: R  -  Quit: Escape",
+            ),            GameType::Number => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                  NUMBER                 │", "  └─────────────────────────────────────────┘"],
                 "A fast-paced interactive utility challenge. Train your brain, convert values, or solve ciphers against a ticking clock!",
                 "Type Input: Number Keys  •  Delete: Backspace  •  Submit: Enter  •  Quit: Escape",
@@ -590,11 +692,6 @@ impl ArcadeConsole {
                 vec!["  ┌─────────────────────────────────────────┐", "  │                  POKETE                 │", "  └─────────────────────────────────────────┘"],
                 "A turn-based mini-RPG dungeon crawler. Wander randomized rooms, gather health potions, find weapons, fight monsters, and go deep down the stairs.",
                 "Move/Attack: Arrow Keys / WASD  •  Restart: R  •  Quit Game: Escape",
-            ),
-            GameType::Pong => (
-                vec!["  ██████╗  ██████╗ ███╗   ██╗ ██████╗ ", "  ██╔══██╗██╔═══██╗████╗  ██║██╔════╝ ", "  ██████╔╝██║   ██║██╔██╗ ██║██║  ███╗", "  ██╔═══╝ ██║   ██║██║╚██╗██║██║   ██║", "  ██║     ╚██████╔╝██║ ╚████║╚██████╔╝"],
-                "The grandfather of video games, rebuilt in full glory! Control your left paddle in real-time to deflect the ball past the computer opponent. Features smooth ball spin physics.",
-                "Move Paddle: Up/Down Arrows / W/S  •  Pause: P  •  Quit Game: Escape",
             ),
             GameType::Primes => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                  PRIMES                 │", "  └─────────────────────────────────────────┘"],
@@ -686,7 +783,11 @@ impl ArcadeConsole {
                 "A classic strategy board or card game recreated in retro terminal style. Play your hands, place your bets, or out-maneuver the AI.",
                 "Hit/Select: H / Enter  •  Stand/Pass: S / Space  •  Restart: R  •  Quit: Escape",
             ),
-            GameType::Tetris => (
+            GameType::Term2048 => (
+                vec!["  +-----------------------------------------+", "  |                TERM2048                 |", "  +-----------------------------------------+"],
+                "A terminal-focused 2048 variant. Slide numbered tiles, merge matching values, and chase the highest power-of-two tile you can build.",
+                "Slide: Arrow Keys / WASD  -  Pause: P  -  Quit Arcade: Escape",
+            ),            GameType::Tetris => (
                 vec!["  ██████╗████████╗██████╗ ██╗███████╗", "  ╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔════╝", "     ██║      ██║   ██████╔╝██║███████╗", "     ██║      ██║   ██╔══██╗██║╚════██║", "     ██║      ██║   ██║  ██║██║███████║"],
                 "A classic real-time tile match game! Fit falling tetrominoes together to clear complete horizontal lines. Features increasing levels, speeds, and block previews.",
                 "Move: Left/Right Arrow  •  Rotate: Up Arrow  •  Soft Drop: Down Arrow  •  Hard Drop: Space  •  Hold: C / Shift  •  Pause: P",
@@ -716,7 +817,11 @@ impl ArcadeConsole {
                 "A turn-based mini-RPG dungeon crawler. Wander randomized rooms, gather health potions, find weapons, fight monsters, and go deep down the stairs.",
                 "Move/Attack: Arrow Keys / WASD  •  Restart: R  •  Quit Game: Escape",
             ),
-            GameType::Vitetris => (
+            GameType::Tron => (
+                vec!["  +-----------------------------------------+", "  |                  TRON                   |", "  +-----------------------------------------+"],
+                "A real-time light-cycle duel. Turn sharply, leave an energy trail, and force the red cycle into a wall or path before you crash.",
+                "Turn: Arrow Keys / WASD  -  Pause: P  -  Quit Game: Escape",
+            ),            GameType::Vitetris => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                 VITETRIS                │", "  └─────────────────────────────────────────┘"],
                 "Fast-paced real-time retro arcade action! Dodge obstacles, shoot projectiles, time your jumps, and survive to score big.",
                 "Jump: W / Space / Up  •  Fire: F / Enter  •  Restart: R  •  Quit: Escape",
@@ -759,10 +864,19 @@ impl ArcadeConsole {
         }
     }
 
+    fn set_theme(&mut self, theme: Theme) {
+        self.settings.theme = theme;
+        if self.persist_settings {
+            if let Err(error) = self.settings.save() {
+                eprintln!("Failed to save arcade settings: {error}");
+            }
+        }
+    }
+
     pub fn update(&mut self, delta: Duration) {
         if let Some(game) = &mut self.active_game {
             game.update(delta);
-            
+
             // Check if game ended to update and save high score in real-time
             if game.is_game_over() {
                 if let Some(game_type) = self.active_game_type {
@@ -794,9 +908,26 @@ impl ArcadeConsole {
                 GameCommand::None => {}
             }
             false
+        } else if self.screen == ArcadeScreen::Settings {
+            match key {
+                KeyCode::Left | KeyCode::Char('a') | KeyCode::Char('A') => {
+                    self.set_theme(self.settings.theme.previous());
+                }
+                KeyCode::Right | KeyCode::Char('d') | KeyCode::Char('D') | KeyCode::Char(' ') => {
+                    self.set_theme(self.settings.theme.next());
+                }
+                KeyCode::Enter | KeyCode::Esc | KeyCode::Char('t') | KeyCode::Char('T') => {
+                    self.screen = ArcadeScreen::Menu;
+                }
+                _ => {}
+            }
+            false
         } else {
             // Main menu navigation
             match key {
+                KeyCode::Char('t') | KeyCode::Char('T') => {
+                    self.screen = ArcadeScreen::Settings;
+                }
                 // Tab category switching: Left / Right / A / D
                 KeyCode::Left | KeyCode::Char('a') | KeyCode::Char('A') => {
                     if self.active_category_idx > 0 {
@@ -804,7 +935,8 @@ impl ArcadeConsole {
                     } else {
                         self.active_category_idx = self.categories.len() - 1;
                     }
-                    self.active_games = Self::get_games_for_category(self.categories[self.active_category_idx]);
+                    self.active_games =
+                        Self::get_games_for_category(self.categories[self.active_category_idx]);
                     self.selected_index = 0;
                     self.scroll_offset = 0;
                 }
@@ -814,7 +946,8 @@ impl ArcadeConsole {
                     } else {
                         self.active_category_idx = 0;
                     }
-                    self.active_games = Self::get_games_for_category(self.categories[self.active_category_idx]);
+                    self.active_games =
+                        Self::get_games_for_category(self.categories[self.active_category_idx]);
                     self.selected_index = 0;
                     self.scroll_offset = 0;
                 }
@@ -826,7 +959,7 @@ impl ArcadeConsole {
                         } else {
                             self.selected_index = self.active_games.len() - 1;
                         }
-                        
+
                         // Adjust scroll offset
                         if self.selected_index < self.scroll_offset {
                             self.scroll_offset = self.selected_index;
@@ -872,17 +1005,26 @@ impl ArcadeConsole {
             // Render active game full-frame
             game.draw(frame, area);
         } else {
+            let palette = self.settings.theme.palette();
+
             // Render Main Arcade Hub UI
             let outer_block = Block::default()
                 .title(" RUST RETRO ARCADE 100-GAME mega CABINET ")
                 .title_alignment(Alignment::Center)
                 .borders(Borders::ALL)
                 .border_type(BorderType::Double)
-                .border_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
-            
+                .border_style(
+                    Style::default()
+                        .fg(palette.border)
+                        .add_modifier(Modifier::BOLD),
+                );
+
             frame.render_widget(outer_block, area);
 
-            let inner_area = area.inner(&ratatui::layout::Margin { horizontal: 2, vertical: 1 });
+            let inner_area = area.inner(&ratatui::layout::Margin {
+                horizontal: 2,
+                vertical: 1,
+            });
 
             // Layout split: Header, Tabs, Center, Footer
             let main_layouts = Layout::default()
@@ -905,7 +1047,7 @@ impl ArcadeConsole {
                 Line::from(""),
                 Line::from(vec![
                     Span::styled(" 👾 🕹️  1 0 0   G A M E S   R E T R O   A R C A D E   M E G A   C A B I N E T  🕹️ 👾 ", 
-                        Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)
+                        Style::default().fg(palette.accent).add_modifier(Modifier::BOLD)
                     ),
                 ]),
             ];
@@ -918,18 +1060,30 @@ impl ArcadeConsole {
             for (idx, cat) in self.categories.iter().enumerate() {
                 let is_active = idx == self.active_category_idx;
                 if is_active {
-                    tab_spans.push(Span::styled(format!(" [ {cat} ] "), Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD)));
+                    tab_spans.push(Span::styled(
+                        format!(" [ {cat} ] "),
+                        Style::default()
+                            .fg(palette.selected_fg)
+                            .bg(palette.selected_bg)
+                            .add_modifier(Modifier::BOLD),
+                    ));
                 } else {
-                    tab_spans.push(Span::styled(format!("   {cat}   "), Style::default().fg(Color::DarkGray)));
+                    tab_spans.push(Span::styled(
+                        format!("   {cat}   "),
+                        Style::default().fg(palette.muted),
+                    ));
                 }
-                tab_spans.push(Span::styled("  │  ", Style::default().fg(Color::Rgb(50, 50, 50))));
+                tab_spans.push(Span::styled("  │  ", Style::default().fg(palette.muted)));
             }
             if !tab_spans.is_empty() {
                 tab_spans.pop(); // Remove trailing separator
             }
-            
-            let tabs_paragraph = Paragraph::new(Line::from(tab_spans))
-                .block(Block::default().borders(Borders::BOTTOM).border_style(Style::default().fg(Color::Rgb(50, 50, 50))));
+
+            let tabs_paragraph = Paragraph::new(Line::from(tab_spans)).block(
+                Block::default()
+                    .borders(Borders::BOTTOM)
+                    .border_style(Style::default().fg(palette.muted)),
+            );
             frame.render_widget(tabs_paragraph, tabs_area);
 
             // 3. Draw Center Split: Left = Menu list, Right = Game detail card
@@ -946,22 +1100,29 @@ impl ArcadeConsole {
 
             // 3a. Draw Game List Panel
             let list_block = Block::default()
-                .title(format!(" GAMES IN {} ", self.categories[self.active_category_idx].to_uppercase()))
+                .title(format!(
+                    " GAMES IN {} ",
+                    self.categories[self.active_category_idx].to_uppercase()
+                ))
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::White));
-            
+                .border_style(Style::default().fg(palette.body));
+
             let list_inner = list_block.inner(list_area);
             frame.render_widget(list_block, list_area);
 
             let mut game_rows = Vec::new();
-            
+
             // Viewport pagination
             let viewport_size = 10;
-            let display_games = &self.active_games[self.scroll_offset..std::cmp::min(self.scroll_offset + viewport_size, self.active_games.len())];
+            let display_games = &self.active_games[self.scroll_offset
+                ..std::cmp::min(self.scroll_offset + viewport_size, self.active_games.len())];
 
             if self.scroll_offset > 0 {
-                game_rows.push(Line::from(Span::styled("        ▲ (more above)", Style::default().fg(Color::Yellow))));
+                game_rows.push(Line::from(Span::styled(
+                    "        ▲ (more above)",
+                    Style::default().fg(palette.accent_alt),
+                )));
             } else {
                 game_rows.push(Line::from(""));
             }
@@ -972,16 +1133,24 @@ impl ArcadeConsole {
                 let mut spans = Vec::new();
 
                 if is_selected {
-                    spans.push(Span::styled(" ▶  ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)));
+                    spans.push(Span::styled(
+                        " ▶  ",
+                        Style::default()
+                            .fg(palette.accent_alt)
+                            .add_modifier(Modifier::BOLD),
+                    ));
                     spans.push(Span::styled(
                         format!("{:<25}", game.name()),
-                        Style::default().fg(Color::Yellow).bg(Color::Rgb(30, 30, 0)).add_modifier(Modifier::BOLD)
+                        Style::default()
+                            .fg(palette.selected_fg)
+                            .bg(palette.selected_bg)
+                            .add_modifier(Modifier::BOLD),
                     ));
                 } else {
-                    spans.push(Span::styled("    ", Style::default().fg(Color::DarkGray)));
+                    spans.push(Span::styled("    ", Style::default().fg(palette.muted)));
                     spans.push(Span::styled(
                         format!("{:<25}", game.name()),
-                        Style::default().fg(Color::Gray)
+                        Style::default().fg(palette.body),
                     ));
                 }
 
@@ -989,7 +1158,10 @@ impl ArcadeConsole {
             }
 
             if self.scroll_offset + viewport_size < self.active_games.len() {
-                game_rows.push(Line::from(Span::styled("        ▼ (more below)", Style::default().fg(Color::Yellow))));
+                game_rows.push(Line::from(Span::styled(
+                    "        ▼ (more below)",
+                    Style::default().fg(palette.accent_alt),
+                )));
             } else {
                 game_rows.push(Line::from(""));
             }
@@ -1006,8 +1178,8 @@ impl ArcadeConsole {
                     .title(" GAME PREVIEW ")
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded)
-                    .border_style(Style::default().fg(Color::Cyan));
-                
+                    .border_style(Style::default().fg(palette.accent));
+
                 let card_inner = card_block.inner(card_area);
                 frame.render_widget(card_block, card_area);
 
@@ -1016,57 +1188,208 @@ impl ArcadeConsole {
 
                 let mut card_rows = Vec::new();
                 card_rows.push(Line::from(""));
-                
+
                 // Draw logo art
                 for row in logo_art {
-                    card_rows.push(Line::from(vec![
-                        Span::styled(row, Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
-                    ]));
+                    card_rows.push(Line::from(vec![Span::styled(
+                        row,
+                        Style::default()
+                            .fg(palette.accent)
+                            .add_modifier(Modifier::BOLD),
+                    )]));
                 }
                 card_rows.push(Line::from(""));
 
                 // Description
-                card_rows.push(Line::from(vec![
-                    Span::styled("   ABOUT: ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                ]));
+                card_rows.push(Line::from(vec![Span::styled(
+                    "   ABOUT: ",
+                    Style::default()
+                        .fg(palette.accent_alt)
+                        .add_modifier(Modifier::BOLD),
+                )]));
                 card_rows.push(Line::from(format!("   {}", desc)));
                 card_rows.push(Line::from(""));
 
                 // High Score
                 card_rows.push(Line::from(vec![
-                    Span::styled("   PERSONAL HIGH SCORE: ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                    Span::styled(format!(" {:06}", high_score), Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)),
+                    Span::styled(
+                        "   PERSONAL HIGH SCORE: ",
+                        Style::default()
+                            .fg(palette.accent_alt)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                    Span::styled(
+                        format!(" {:06}", high_score),
+                        Style::default()
+                            .fg(palette.success)
+                            .add_modifier(Modifier::BOLD),
+                    ),
                 ]));
                 card_rows.push(Line::from(""));
 
                 // Controls
-                card_rows.push(Line::from(vec![
-                    Span::styled("   CONTROLS: ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                ]));
+                card_rows.push(Line::from(vec![Span::styled(
+                    "   CONTROLS: ",
+                    Style::default()
+                        .fg(palette.accent_alt)
+                        .add_modifier(Modifier::BOLD),
+                )]));
                 card_rows.push(Line::from(format!("   {}", controls)));
 
-                let card_paragraph = Paragraph::new(card_rows)
-                    .wrap(Wrap { trim: false });
+                let card_paragraph = Paragraph::new(card_rows).wrap(Wrap { trim: false });
                 frame.render_widget(card_paragraph, card_inner);
             }
 
             // 4. Draw Footer Keymap Panel
-            let footer_content = vec![
-                Line::from(vec![
-                    Span::styled(" [◀▶/AD] ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
-                    Span::styled("Switch Category   ", Style::default().fg(Color::White)),
-                    Span::styled(" [▲▼/WS] ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
-                    Span::styled("Select Game   ", Style::default().fg(Color::White)),
-                    Span::styled(" [Enter/Space] ", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)),
-                    Span::styled("Start   ", Style::default().fg(Color::White)),
-                    Span::styled(" [Esc/Q] ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)),
-                    Span::styled("Quit Arcade", Style::default().fg(Color::White)),
-                ]),
-            ];
+            let footer_content = vec![Line::from(vec![
+                Span::styled(
+                    " [◀▶/AD] ",
+                    Style::default()
+                        .fg(palette.accent)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled("Switch Category   ", Style::default().fg(palette.body)),
+                Span::styled(
+                    " [▲▼/WS] ",
+                    Style::default()
+                        .fg(palette.accent)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled("Select Game   ", Style::default().fg(palette.body)),
+                Span::styled(
+                    " [Enter/Space] ",
+                    Style::default()
+                        .fg(palette.success)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled("Start   ", Style::default().fg(palette.body)),
+                Span::styled(
+                    " [T] ",
+                    Style::default()
+                        .fg(palette.accent_alt)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled("Theme   ", Style::default().fg(palette.body)),
+                Span::styled(
+                    " [Esc/Q] ",
+                    Style::default()
+                        .fg(palette.danger)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled("Quit Arcade", Style::default().fg(palette.body)),
+            ])];
             let footer_paragraph = Paragraph::new(footer_content)
                 .alignment(Alignment::Center)
                 .block(Block::default().borders(Borders::NONE));
             frame.render_widget(footer_paragraph, footer_area);
+
+            if self.screen == ArcadeScreen::Settings {
+                self.draw_settings_overlay(frame, area);
+            }
+        }
+    }
+
+    fn draw_settings_overlay(&self, frame: &mut Frame, area: Rect) {
+        let palette = self.settings.theme.palette();
+        let popup_area = Self::centered_popup(area, 62, 17);
+        frame.render_widget(Clear, popup_area);
+
+        let block = Block::default()
+            .title(" THEME SETTINGS ")
+            .title_alignment(Alignment::Center)
+            .borders(Borders::ALL)
+            .border_type(BorderType::Double)
+            .border_style(
+                Style::default()
+                    .fg(palette.accent_alt)
+                    .add_modifier(Modifier::BOLD),
+            );
+        let inner = block.inner(popup_area);
+        frame.render_widget(block, popup_area);
+
+        let mut rows = vec![
+            Line::from(""),
+            Line::from(vec![
+                Span::styled(
+                    "  Active theme: ",
+                    Style::default()
+                        .fg(palette.accent_alt)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(
+                    self.settings.theme.display_name(),
+                    Style::default()
+                        .fg(palette.accent)
+                        .add_modifier(Modifier::BOLD),
+                ),
+            ]),
+            Line::from(""),
+        ];
+
+        for theme in Theme::all() {
+            let is_active = *theme == self.settings.theme;
+            let marker = if is_active { " > " } else { "   " };
+            let status = if is_active { " selected" } else { "" };
+            let style = if is_active {
+                Style::default()
+                    .fg(palette.selected_fg)
+                    .bg(palette.selected_bg)
+                    .add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(palette.body)
+            };
+
+            rows.push(Line::from(vec![
+                Span::styled(
+                    marker,
+                    Style::default()
+                        .fg(palette.accent_alt)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(format!("{:<18}", theme.display_name()), style),
+                Span::styled(status, Style::default().fg(palette.muted)),
+            ]));
+        }
+
+        rows.extend([
+            Line::from(""),
+            Line::from(vec![
+                Span::styled(
+                    "  Left/Right or A/D",
+                    Style::default()
+                        .fg(palette.accent)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(" cycle themes", Style::default().fg(palette.body)),
+            ]),
+            Line::from(vec![
+                Span::styled(
+                    "  Enter/Esc/T",
+                    Style::default()
+                        .fg(palette.accent)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(" return to the arcade", Style::default().fg(palette.body)),
+            ]),
+        ]);
+
+        let paragraph = Paragraph::new(rows)
+            .alignment(Alignment::Left)
+            .wrap(Wrap { trim: false });
+        frame.render_widget(paragraph, inner);
+    }
+
+    fn centered_popup(area: Rect, desired_width: u16, desired_height: u16) -> Rect {
+        let width = desired_width.min(area.width);
+        let height = desired_height.min(area.height);
+        let x = area.x + area.width.saturating_sub(width) / 2;
+        let y = area.y + area.height.saturating_sub(height) / 2;
+
+        Rect {
+            x,
+            y,
+            width,
+            height,
         }
     }
 }

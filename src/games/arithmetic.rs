@@ -15,7 +15,6 @@ pub struct ArithmeticGame {
     target: u32,
     player_input: String,
     score: u32,
-    high_score: u32,
     game_over: bool,
     paused: bool,
     time_limit: f32,
@@ -30,7 +29,6 @@ impl ArithmeticGame {
             target: 0,
             player_input: String::new(),
             score: 0,
-            high_score: 0,
             game_over: false,
             paused: false,
             time_limit: 15.0,
@@ -112,6 +110,9 @@ impl Game for ArithmeticGame {
         }
 
         match key {
+            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
+                return GameCommand::Exit;
+            }
             KeyCode::Char(c) => {
                 if c.is_digit(10) {
                     self.player_input.push(c);
@@ -122,9 +123,6 @@ impl Game for ArithmeticGame {
             }
             KeyCode::Enter => {
                 self.submit();
-            }
-            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
-                return GameCommand::Exit;
             }
             _ => {}
         }
@@ -240,5 +238,20 @@ impl Game for ArithmeticGame {
 
     fn is_game_over(&self) -> bool {
         self.game_over
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn q_exits_active_game() {
+        let mut game = ArithmeticGame::new();
+
+        assert!(matches!(
+            game.handle_input(KeyCode::Char('q')),
+            GameCommand::Exit
+        ));
     }
 }
