@@ -35,6 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 3. Initialize arcade
     let mut arcade = ArcadeConsole::new();
     let mut last_tick = Instant::now();
+    let startup_time = Instant::now();
 
     // 4. Run real-time game loop capped at ~60 FPS
     loop {
@@ -55,9 +56,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if let Event::Key(key) = event::read()? {
                 // Ignore key release events (common on Windows)
                 if key.kind == event::KeyEventKind::Press {
-                    let should_quit = arcade.handle_input(key.code);
-                    if should_quit {
-                        break;
+                    // Ignore query escape sequences interpreted as ESC key on startup
+                    if startup_time.elapsed() > Duration::from_millis(200) {
+                        let should_quit = arcade.handle_input(key.code);
+                        if should_quit {
+                            break;
+                        }
                     }
                 }
             }
