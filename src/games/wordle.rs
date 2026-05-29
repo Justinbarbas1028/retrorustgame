@@ -3,11 +3,12 @@ use rand::Rng;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 const WORD_BANK: &[&str] = &[
@@ -166,7 +167,7 @@ impl Game for WordleGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -212,13 +213,13 @@ impl Game for WordleGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" WORDLE CABINET ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -239,7 +240,7 @@ impl Game for WordleGame {
         let grid_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Gray));
+            .border_style(Style::default().fg(palette.muted));
         let grid_inner = grid_block.inner(grid_area);
         frame.render_widget(grid_block, grid_area);
 
@@ -254,18 +255,18 @@ impl Game for WordleGame {
                 let val_str = format!(" {} ", cell.char_val);
                 
                 let (fg, bg, modifier) = match cell.state {
-                    LetterState::Empty => (Color::DarkGray, Color::Black, Modifier::empty()),
+                    LetterState::Empty => (palette.muted, palette.muted, Modifier::empty()),
                     LetterState::Inputting => {
                         // Highlight input cell under the cursor
                         if attempt == self.current_attempt && col == self.cursor_col.saturating_sub(1) {
-                            (Color::Yellow, Color::Rgb(30, 30, 30), Modifier::UNDERLINED | Modifier::BOLD)
+                            (palette.accent_alt, palette.muted, Modifier::UNDERLINED | Modifier::BOLD)
                         } else {
-                            (Color::White, Color::Black, Modifier::empty())
+                            (palette.body, palette.muted, Modifier::empty())
                         }
                     }
-                    LetterState::Correct => (Color::Black, Color::Green, Modifier::BOLD),
-                    LetterState::Present => (Color::Black, Color::Yellow, Modifier::BOLD),
-                    LetterState::Absent => (Color::White, Color::Rgb(40, 40, 40), Modifier::empty()),
+                    LetterState::Correct => (palette.muted, palette.accent, Modifier::BOLD),
+                    LetterState::Present => (palette.muted, palette.accent_alt, Modifier::BOLD),
+                    LetterState::Absent => (palette.body, palette.muted, Modifier::empty()),
                 };
 
                 spans.push(Span::styled(
@@ -292,13 +293,13 @@ impl Game for WordleGame {
 
         let stats_content = vec![
             Line::from(vec![
-                Span::styled(" ATTEMPTS", Style::default().fg(Color::Cyan)),
-                Span::styled(format!("  {}/6", self.current_attempt + 1), Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
+                Span::styled(" ATTEMPTS", Style::default().fg(palette.accent)),
+                Span::styled(format!("  {}/6", self.current_attempt + 1), Style::default().fg(palette.body).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" WORD BANK", Style::default().fg(Color::LightGreen)),
-                Span::styled(format!("  {} items", WORD_BANK.len()), Style::default().fg(Color::White)),
+                Span::styled(" WORD BANK", Style::default().fg(palette.accent)),
+                Span::styled(format!("  {} items", WORD_BANK.len()), Style::default().fg(palette.body)),
             ]),
         ];
         let stats_paragraph = Paragraph::new(stats_content)
@@ -322,10 +323,10 @@ impl Game for WordleGame {
             for &c in row_chars {
                 let state = self.keyboard_states.get(&c).copied().unwrap_or(LetterState::Empty);
                 let (fg, bg) = match state {
-                    LetterState::Correct => (Color::Black, Color::Green),
-                    LetterState::Present => (Color::Black, Color::Yellow),
-                    LetterState::Absent => (Color::DarkGray, Color::Rgb(30, 30, 30)),
-                    _ => (Color::White, Color::Black),
+                    LetterState::Correct => (palette.muted, palette.accent),
+                    LetterState::Present => (palette.muted, palette.accent_alt),
+                    LetterState::Absent => (palette.muted, palette.muted),
+                    _ => (palette.body, palette.muted),
                 };
                 key_spans.push(Span::styled(
                     format!(" {} ", c),
@@ -352,11 +353,11 @@ impl Game for WordleGame {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -370,26 +371,26 @@ impl Game for WordleGame {
             let message = if self.won {
                 vec![
                     Line::from(""),
-                    Line::from(Span::styled(" WORD REVEALED! ", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))),
+                    Line::from(Span::styled(" WORD REVEALED! ", Style::default().fg(palette.accent).add_modifier(Modifier::BOLD))),
                     Line::from(format!("Score: {}", self.score)),
                     Line::from(""),
-                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
                 ]
             } else {
                 vec![
                     Line::from(""),
-                    Line::from(Span::styled(" FAILED GUESS! ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))),
+                    Line::from(Span::styled(" FAILED GUESS! ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD))),
                     Line::from(format!("Word: {}", self.secret_word)),
                     Line::from(""),
-                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
                 ]
             };
 
             let go_widget = Paragraph::new(message)
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(if self.won { Color::Green } else { Color::Red })));
+                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(if self.won { palette.accent } else { palette.danger })));
             frame.render_widget(go_widget, go_area);
         }
     }

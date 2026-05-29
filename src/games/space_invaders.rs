@@ -3,11 +3,12 @@ use rand::Rng;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 const WIDTH: i32 = 30;
@@ -314,7 +315,7 @@ impl Game for SpaceInvadersGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -349,13 +350,13 @@ impl Game for SpaceInvadersGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" SPACE INVADERS CABINET ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -375,7 +376,7 @@ impl Game for SpaceInvadersGame {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Gray));
+            .border_style(Style::default().fg(palette.muted));
         
         let board_inner = board_block.inner(board_area);
         frame.render_widget(board_block, board_area);
@@ -387,9 +388,9 @@ impl Game for SpaceInvadersGame {
         for bunker in &self.bunkers {
             if bunker.health > 0 {
                 let color = match bunker.health {
-                    3 => Color::Green,
-                    2 => Color::LightGreen,
-                    _ => Color::DarkGray,
+                    3 => palette.accent,
+                    2 => palette.accent,
+                    _ => palette.muted,
                 };
                 visual_grid[bunker.y as usize][bunker.x as usize] = Some(Style::default().fg(color));
             }
@@ -398,30 +399,30 @@ impl Game for SpaceInvadersGame {
         // 2. Draw Player lasers
         for &(lx, ly) in &self.player_lasers {
             if ly >= 0 && ly < HEIGHT {
-                visual_grid[ly as usize][lx as usize] = Some(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
+                visual_grid[ly as usize][lx as usize] = Some(Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD));
             }
         }
 
         // 3. Draw Alien lasers
         for &(lx, ly) in &self.alien_lasers {
             if ly >= 0 && ly < HEIGHT {
-                visual_grid[ly as usize][lx as usize] = Some(Style::default().fg(Color::Red));
+                visual_grid[ly as usize][lx as usize] = Some(Style::default().fg(palette.danger));
             }
         }
 
         // 4. Draw Aliens
         for alien in &self.aliens {
             let color = match alien.points {
-                30 => Color::LightMagenta,
-                20 => Color::LightBlue,
-                _ => Color::LightCyan,
+                30 => palette.accent_alt,
+                20 => palette.accent,
+                _ => palette.accent,
             };
             visual_grid[alien.y as usize][alien.x as usize] = Some(Style::default().fg(color));
         }
 
         // 5. Draw Player
         if !self.game_over {
-            visual_grid[HEIGHT as usize - 2][self.player_x as usize] = Some(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+            visual_grid[HEIGHT as usize - 2][self.player_x as usize] = Some(Style::default().fg(palette.accent).add_modifier(Modifier::BOLD));
         }
 
         // Build character output lines
@@ -478,25 +479,25 @@ impl Game for SpaceInvadersGame {
 
         let mut lives_span = Vec::new();
         for _ in 0..self.lives {
-            lives_span.push(Span::styled("▲ ", Style::default().fg(Color::Cyan)));
+            lives_span.push(Span::styled("▲ ", Style::default().fg(palette.accent)));
         }
         while lives_span.len() < 3 {
-            lives_span.push(Span::styled(". ", Style::default().fg(Color::Rgb(50, 50, 50))));
+            lives_span.push(Span::styled(". ", Style::default().fg(palette.muted)));
         }
 
         let stats_content = vec![
             Line::from(vec![
-                Span::styled(" SCORE ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                Span::styled(format!("  {:05}", self.score), Style::default().fg(Color::White)),
+                Span::styled(" SCORE ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD)),
+                Span::styled(format!("  {:05}", self.score), Style::default().fg(palette.body)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" WAVE  ", Style::default().fg(Color::Magenta)),
-                Span::styled(format!("  {:02}", self.wave), Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
+                Span::styled(" WAVE  ", Style::default().fg(palette.accent_alt)),
+                Span::styled(format!("  {:02}", self.wave), Style::default().fg(palette.body).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" SHIPS ", Style::default().fg(Color::Cyan)),
+                Span::styled(" SHIPS ", Style::default().fg(palette.accent)),
             ]),
             Line::from(lives_span),
         ];
@@ -506,11 +507,11 @@ impl Game for SpaceInvadersGame {
         frame.render_widget(stats_paragraph, side_layout[0]);
 
         let instruct_content = vec![
-            Line::from(Span::styled("  [←→]/[A/D]  Move", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Spc]/[W]   Shoot", Style::default().fg(Color::White))),
+            Line::from(Span::styled("  [←→]/[A/D]  Move", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Spc]/[W]   Shoot", Style::default().fg(palette.body))),
             Line::from(""),
-            Line::from(Span::styled("  [P]         Pause", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Esc]       Quit", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab]       Pause", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Esc]       Quit", Style::default().fg(palette.muted))),
         ];
 
         let instruct_paragraph = Paragraph::new(instruct_content)
@@ -528,11 +529,11 @@ impl Game for SpaceInvadersGame {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -545,16 +546,16 @@ impl Game for SpaceInvadersGame {
             
             let message = vec![
                 Line::from(""),
-                Line::from(Span::styled(" INVASION COMPLETE ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled(" INVASION COMPLETE ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD))),
                 Line::from(format!("Final Score: {}", self.score)),
                 Line::from(""),
-                Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
             ];
 
             let go_widget = Paragraph::new(message)
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Red)));
+                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.danger)));
             frame.render_widget(go_widget, go_area);
         }
     }

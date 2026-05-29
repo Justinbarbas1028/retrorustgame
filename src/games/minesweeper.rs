@@ -3,11 +3,12 @@ use rand::Rng;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 const BOARD_SIZE: usize = 10;
@@ -190,24 +191,24 @@ impl MinesweeperGame {
         count
     }
 
-    fn get_cell_style_and_char(&self, x: usize, y: usize) -> (Style, &'static str) {
+    fn get_cell_style_and_char(&self, x: usize, y: usize, palette: &ThemePalette) -> (Style, &'static str) {
         let cell = self.board[y][x];
         
         if cell.is_revealed {
             if cell.is_mine {
-                (Style::default().fg(Color::Red).add_modifier(Modifier::BOLD), "💣")
+                (Style::default().fg(palette.danger).add_modifier(Modifier::BOLD), "💣")
             } else if cell.adjacent_mines == 0 {
-                (Style::default().fg(Color::DarkGray), "  ")
+                (Style::default().fg(palette.muted), "  ")
             } else {
                 let color = match cell.adjacent_mines {
-                    1 => Color::Blue,
-                    2 => Color::Green,
-                    3 => Color::Red,
-                    4 => Color::Rgb(0, 0, 128), // Navy
-                    5 => Color::Rgb(128, 0, 0), // Maroon
-                    6 => Color::Rgb(0, 128, 128), // Teal
-                    7 => Color::Black,
-                    _ => Color::DarkGray,
+                    1 => palette.accent,
+                    2 => palette.accent,
+                    3 => palette.danger,
+                    4 => palette.muted, // Navy
+                    5 => palette.muted, // Maroon
+                    6 => palette.muted, // Teal
+                    7 => palette.muted,
+                    _ => palette.muted,
                 };
                 let text = match cell.adjacent_mines {
                     1 => "1 ", 2 => "2 ", 3 => "3 ", 4 => "4 ",
@@ -216,9 +217,9 @@ impl MinesweeperGame {
                 (Style::default().fg(color).add_modifier(Modifier::BOLD), text)
             }
         } else if cell.is_flagged {
-            (Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD), "⚑ ")
+            (Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD), "⚑ ")
         } else {
-            (Style::default().fg(Color::Rgb(80, 80, 80)), "■ ")
+            (Style::default().fg(palette.muted), "■ ")
         }
     }
 }
@@ -235,7 +236,7 @@ impl Game for MinesweeperGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -283,13 +284,13 @@ impl Game for MinesweeperGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" MINESWEEPER CABINET ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -310,7 +311,7 @@ impl Game for MinesweeperGame {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Gray));
+            .border_style(Style::default().fg(palette.muted));
         
         let board_inner = board_block.inner(board_area);
         frame.render_widget(board_block, board_area);
@@ -320,13 +321,13 @@ impl Game for MinesweeperGame {
         for r in 0..BOARD_SIZE {
             let mut line_spans = Vec::new();
             for c in 0..BOARD_SIZE {
-                let (style, symbol) = self.get_cell_style_and_char(c, r);
+                let (style, symbol) = self.get_cell_style_and_char(c, r, palette);
                 
                 // Highlight cursor position
                 if r == self.cursor_y && c == self.cursor_x {
                     line_spans.push(Span::styled(
                         symbol,
-                        style.bg(Color::Rgb(0, 100, 100)).add_modifier(Modifier::UNDERLINED)
+                        style.bg(palette.muted).add_modifier(Modifier::UNDERLINED)
                     ));
                 } else {
                     line_spans.push(Span::styled(symbol, style));
@@ -352,21 +353,21 @@ impl Game for MinesweeperGame {
 
         let stats_content = vec![
             Line::from(vec![
-                Span::styled(" SCORE ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                Span::styled(format!("  {:05}", self.score), Style::default().fg(Color::White)),
+                Span::styled(" SCORE ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD)),
+                Span::styled(format!("  {:05}", self.score), Style::default().fg(palette.body)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" MINES ", Style::default().fg(Color::Red)),
-                Span::styled(format!("  {:02}", TOTAL_MINES), Style::default().fg(Color::White)),
+                Span::styled(" MINES ", Style::default().fg(palette.danger)),
+                Span::styled(format!("  {:02}", TOTAL_MINES), Style::default().fg(palette.body)),
             ]),
             Line::from(vec![
-                Span::styled(" FLAGS ", Style::default().fg(Color::Yellow)),
-                Span::styled(format!("  {:02}", flagged), Style::default().fg(Color::White)),
+                Span::styled(" FLAGS ", Style::default().fg(palette.accent_alt)),
+                Span::styled(format!("  {:02}", flagged), Style::default().fg(palette.body)),
             ]),
             Line::from(vec![
-                Span::styled(" UNUSED", Style::default().fg(Color::Green)),
-                Span::styled(format!("  {:02}", remaining_mines), Style::default().fg(Color::White)),
+                Span::styled(" UNUSED", Style::default().fg(palette.accent)),
+                Span::styled(format!("  {:02}", remaining_mines), Style::default().fg(palette.body)),
             ]),
         ];
 
@@ -375,12 +376,12 @@ impl Game for MinesweeperGame {
         frame.render_widget(stats_paragraph, side_layout[0]);
 
         let instruct_content = vec![
-            Line::from(Span::styled("  [Arrows/WASD] Move", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Enter/Spc]  Dig", Style::default().fg(Color::White))),
-            Line::from(Span::styled("  [F]          Flag", Style::default().fg(Color::Yellow))),
+            Line::from(Span::styled("  [Arrows/WASD] Move", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Enter/Spc]  Dig", Style::default().fg(palette.body))),
+            Line::from(Span::styled("  [F]          Flag", Style::default().fg(palette.accent_alt))),
             Line::from(""),
-            Line::from(Span::styled("  [P]          Pause", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Esc]        Quit", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab]        Pause", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Esc]        Quit", Style::default().fg(palette.muted))),
         ];
 
         let instruct_paragraph = Paragraph::new(instruct_content)
@@ -398,11 +399,11 @@ impl Game for MinesweeperGame {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -416,26 +417,26 @@ impl Game for MinesweeperGame {
             let message = if self.won {
                 vec![
                     Line::from(""),
-                    Line::from(Span::styled(" YOU CLEAR IT! ", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD))),
+                    Line::from(Span::styled(" YOU CLEAR IT! ", Style::default().fg(palette.accent).add_modifier(Modifier::BOLD))),
                     Line::from(format!("Score: {}", self.score)),
                     Line::from(""),
-                    Line::from(Span::styled("Press [R] to replay", Style::default().fg(Color::Green))),
-                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                    Line::from(Span::styled("Press [R] to replay", Style::default().fg(palette.accent))),
+                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
                 ]
             } else {
                 vec![
                     Line::from(""),
-                    Line::from(Span::styled(" BOOM! DETONATED ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))),
+                    Line::from(Span::styled(" BOOM! DETONATED ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD))),
                     Line::from(format!("Score: {}", self.score)),
                     Line::from(""),
-                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                    Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                    Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
                 ]
             };
 
             let go_widget = Paragraph::new(message)
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(if self.won { Color::Green } else { Color::Red })));
+                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(if self.won { palette.accent } else { palette.danger })));
             frame.render_widget(go_widget, go_area);
         }
     }

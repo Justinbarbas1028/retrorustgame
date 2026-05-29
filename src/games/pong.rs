@@ -2,11 +2,12 @@ use std::time::Duration;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 const GRID_WIDTH: i32 = 30;
@@ -161,7 +162,7 @@ impl Game for PongGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -190,13 +191,13 @@ impl Game for PongGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" PONG CABINET ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -217,7 +218,7 @@ impl Game for PongGame {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::DarkGray));
+            .border_style(Style::default().fg(palette.muted));
         
         let board_inner = board_block.inner(board_area);
         frame.render_widget(board_block, board_area);
@@ -228,7 +229,7 @@ impl Game for PongGame {
         // Draw dotted center line
         for y in 1..GRID_HEIGHT as usize - 1 {
             if y % 2 == 1 {
-                visual_grid[y][GRID_WIDTH as usize / 2] = Some(Style::default().fg(Color::Rgb(60, 60, 60)));
+                visual_grid[y][GRID_WIDTH as usize / 2] = Some(Style::default().fg(palette.muted));
             }
         }
 
@@ -237,7 +238,7 @@ impl Game for PongGame {
         for dy in -1..=1 {
             let y = py_center + dy;
             if y >= 1 && y < GRID_HEIGHT - 1 {
-                visual_grid[y as usize][1] = Some(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD));
+                visual_grid[y as usize][1] = Some(Style::default().fg(palette.accent).add_modifier(Modifier::BOLD));
             }
         }
 
@@ -246,7 +247,7 @@ impl Game for PongGame {
         for dy in -1..=1 {
             let y = ay_center + dy;
             if y >= 1 && y < GRID_HEIGHT - 1 {
-                visual_grid[y as usize][GRID_WIDTH as usize - 2] = Some(Style::default().fg(Color::Red).add_modifier(Modifier::BOLD));
+                visual_grid[y as usize][GRID_WIDTH as usize - 2] = Some(Style::default().fg(palette.danger).add_modifier(Modifier::BOLD));
             }
         }
 
@@ -254,7 +255,7 @@ impl Game for PongGame {
         let bx = self.ball_x.round() as i32;
         let by = self.ball_y.round() as i32;
         if bx >= 0 && bx < GRID_WIDTH && by >= 0 && by < GRID_HEIGHT {
-            visual_grid[by as usize][bx as usize] = Some(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
+            visual_grid[by as usize][bx as usize] = Some(Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD));
         }
 
         // Render buffer to vector of lines
@@ -264,7 +265,7 @@ impl Game for PongGame {
             for x in 0..GRID_WIDTH as usize {
                 // Board boundaries top/bottom
                 if y == 0 || y == GRID_HEIGHT as usize - 1 {
-                    line_spans.push(Span::styled("══", Style::default().fg(Color::DarkGray)));
+                    line_spans.push(Span::styled("══", Style::default().fg(palette.muted)));
                 } else if let Some(style) = visual_grid[y][x] {
                     if x == 1 {
                         line_spans.push(Span::styled("█▌", style));
@@ -297,18 +298,18 @@ impl Game for PongGame {
 
         let scoreboard_content = vec![
             Line::from(vec![
-                Span::styled(" YOU     ", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)),
-                Span::styled(format!(" {}", self.player_score), Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
+                Span::styled(" YOU     ", Style::default().fg(palette.accent).add_modifier(Modifier::BOLD)),
+                Span::styled(format!(" {}", self.player_score), Style::default().fg(palette.body).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(" ═══════════"),
             Line::from(vec![
-                Span::styled(" AI      ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)),
-                Span::styled(format!(" {}", self.ai_score), Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
+                Span::styled(" AI      ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD)),
+                Span::styled(format!(" {}", self.ai_score), Style::default().fg(palette.body).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" BALL SPEED", Style::default().fg(Color::Yellow)),
-                Span::styled(format!("  {}% ", (self.vel_x.abs() / 14.0 * 100.0) as u32), Style::default().fg(Color::White)),
+                Span::styled(" BALL SPEED", Style::default().fg(palette.accent_alt)),
+                Span::styled(format!("  {}% ", (self.vel_x.abs() / 14.0 * 100.0) as u32), Style::default().fg(palette.body)),
             ]),
         ];
 
@@ -317,11 +318,11 @@ impl Game for PongGame {
         frame.render_widget(scoreboard_paragraph, side_layout[0]);
 
         let instruct_content = vec![
-            Line::from(Span::styled("  [Up/Down]  Paddle Up/Dn", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [W / S]    Paddle Up/Dn", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Up/Down]  Paddle Up/Dn", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [W / S]    Paddle Up/Dn", Style::default().fg(palette.muted))),
             Line::from(""),
-            Line::from(Span::styled("  [P]        Pause Game", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Esc]      Exit Game", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab]      Pause Game", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Esc]      Exit Game", Style::default().fg(palette.muted))),
         ];
 
         let instruct_paragraph = Paragraph::new(instruct_content)
@@ -339,11 +340,11 @@ impl Game for PongGame {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -355,17 +356,17 @@ impl Game for PongGame {
             frame.render_widget(Clear, go_area);
             
             let win_style = if self.winner == Some("YOU") {
-                Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)
+                Style::default().fg(palette.accent).add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)
+                Style::default().fg(palette.danger).add_modifier(Modifier::BOLD)
             };
 
             let message = vec![
                 Line::from(""),
                 Line::from(Span::styled(format!(" {} WINS! ", self.winner.unwrap_or("")), win_style)),
                 Line::from(""),
-                Line::from(Span::styled("Press [R] to replay", Style::default().fg(Color::Green))),
-                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [R] to replay", Style::default().fg(palette.accent))),
+                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
             ];
 
             let go_widget = Paragraph::new(message)

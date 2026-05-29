@@ -3,11 +3,12 @@ use rand::Rng;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 const GRID_WIDTH: i32 = 24;
@@ -116,7 +117,7 @@ impl Game for SnakeGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -158,13 +159,13 @@ impl Game for SnakeGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" SNAKE CABINET ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -185,7 +186,7 @@ impl Game for SnakeGame {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Gray));
+            .border_style(Style::default().fg(palette.muted));
         
         let board_inner = board_block.inner(board_area);
         frame.render_widget(board_block, board_area);
@@ -195,21 +196,21 @@ impl Game for SnakeGame {
 
         // Draw boundaries visually
         for x in 0..GRID_WIDTH as usize {
-            visual_grid[0][x] = Some(Style::default().fg(Color::Rgb(80, 80, 80)));
-            visual_grid[GRID_HEIGHT as usize - 1][x] = Some(Style::default().fg(Color::Rgb(80, 80, 80)));
+            visual_grid[0][x] = Some(Style::default().fg(palette.muted));
+            visual_grid[GRID_HEIGHT as usize - 1][x] = Some(Style::default().fg(palette.muted));
         }
         for y in 0..GRID_HEIGHT as usize {
-            visual_grid[y][0] = Some(Style::default().fg(Color::Rgb(80, 80, 80)));
-            visual_grid[y][GRID_WIDTH as usize - 1] = Some(Style::default().fg(Color::Rgb(80, 80, 80)));
+            visual_grid[y][0] = Some(Style::default().fg(palette.muted));
+            visual_grid[y][GRID_WIDTH as usize - 1] = Some(Style::default().fg(palette.muted));
         }
 
         // Draw Food
-        visual_grid[self.food.1 as usize][self.food.0 as usize] = Some(Style::default().fg(Color::Red).add_modifier(Modifier::BOLD));
+        visual_grid[self.food.1 as usize][self.food.0 as usize] = Some(Style::default().fg(palette.danger).add_modifier(Modifier::BOLD));
 
         // Draw Snake body (head distinct color)
         for (i, &pos) in self.snake.iter().enumerate() {
             if pos.0 >= 0 && pos.0 < GRID_WIDTH && pos.1 >= 0 && pos.1 < GRID_HEIGHT {
-                let color = if i == 0 { Color::LightGreen } else { Color::Green };
+                let color = if i == 0 { palette.accent } else { palette.accent };
                 visual_grid[pos.1 as usize][pos.0 as usize] = Some(Style::default().fg(color).add_modifier(Modifier::BOLD));
             }
         }
@@ -252,18 +253,18 @@ impl Game for SnakeGame {
         let speed_pct = 150 - self.get_tick_rate().as_millis() as u32;
         let stats_content = vec![
             Line::from(vec![
-                Span::styled(" SCORE ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-                Span::styled(format!("  {:05}", self.score), Style::default().fg(Color::White)),
+                Span::styled(" SCORE ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD)),
+                Span::styled(format!("  {:05}", self.score), Style::default().fg(palette.body)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" SPEED ", Style::default().fg(Color::Cyan)),
-                Span::styled(format!("  {} mph", speed_pct + 10), Style::default().fg(Color::White)),
+                Span::styled(" SPEED ", Style::default().fg(palette.accent)),
+                Span::styled(format!("  {} mph", speed_pct + 10), Style::default().fg(palette.body)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled(" LENGTH", Style::default().fg(Color::LightGreen)),
-                Span::styled(format!("  {:03}", self.snake.len()), Style::default().fg(Color::White)),
+                Span::styled(" LENGTH", Style::default().fg(palette.accent)),
+                Span::styled(format!("  {:03}", self.snake.len()), Style::default().fg(palette.body)),
             ]),
         ];
 
@@ -272,10 +273,10 @@ impl Game for SnakeGame {
         frame.render_widget(stats_paragraph, side_layout[0]);
 
         let instruct_content = vec![
-            Line::from(Span::styled("  [Arrows/WASD] Move", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Arrows/WASD] Move", Style::default().fg(palette.muted))),
             Line::from(""),
-            Line::from(Span::styled("  [P]           Pause", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Esc]         Quit", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab]         Pause", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Esc]         Quit", Style::default().fg(palette.muted))),
         ];
 
         let instruct_paragraph = Paragraph::new(instruct_content)
@@ -293,11 +294,11 @@ impl Game for SnakeGame {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -310,16 +311,16 @@ impl Game for SnakeGame {
             
             let message = vec![
                 Line::from(""),
-                Line::from(Span::styled(" CRASH DEATH! ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled(" CRASH DEATH! ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD))),
                 Line::from(format!("Final Score: {}", self.score)),
                 Line::from(""),
-                Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
             ];
 
             let go_widget = Paragraph::new(message)
                 .alignment(Alignment::Center)
-                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Red)));
+                .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.danger)));
             frame.render_widget(go_widget, go_area);
         }
     }

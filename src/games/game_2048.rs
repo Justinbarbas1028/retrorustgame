@@ -3,11 +3,12 @@ use rand::Rng;
 use ratatui::{
     Frame,
     layout::{Rect, Layout, Constraint, Direction, Alignment},
-    style::{Color, Style, Modifier},
+    style::{Style, Modifier, Color},
     text::{Line, Span},
     widgets::{Block, Borders, BorderType, Paragraph, Clear},
 };
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 use super::{Game, GameCommand};
 
 pub struct Game2048 {
@@ -204,22 +205,22 @@ impl Game2048 {
         changed
     }
 
-    fn get_tile_colors(val: u32) -> (Color, Color) {
+    fn get_tile_colors(val: u32, palette: &ThemePalette) -> (Color, Color) {
         // Returns (Foreground/Text, Background)
         match val {
-            0 => (Color::DarkGray, Color::Rgb(30, 30, 30)),
-            2 => (Color::White, Color::Rgb(70, 70, 70)),
-            4 => (Color::White, Color::Rgb(95, 95, 95)),
-            8 => (Color::White, Color::Rgb(242, 177, 121)),
-            16 => (Color::White, Color::Rgb(245, 149, 99)),
-            32 => (Color::White, Color::Rgb(246, 124, 95)),
-            64 => (Color::White, Color::Rgb(246, 94, 59)),
-            128 => (Color::Black, Color::Rgb(237, 207, 114)),
-            256 => (Color::Black, Color::Rgb(237, 204, 97)),
-            512 => (Color::Black, Color::Rgb(237, 200, 80)),
-            1024 => (Color::Black, Color::Rgb(237, 197, 63)),
-            2048 => (Color::White, Color::Rgb(237, 194, 46)),
-            _ => (Color::Magenta, Color::Rgb(128, 0, 128)),
+            0 => (palette.muted, palette.muted),
+            2 => (palette.body, palette.muted),
+            4 => (palette.body, palette.muted),
+            8 => (palette.body, palette.muted),
+            16 => (palette.body, palette.muted),
+            32 => (palette.body, palette.muted),
+            64 => (palette.body, palette.muted),
+            128 => (palette.muted, palette.muted),
+            256 => (palette.muted, palette.muted),
+            512 => (palette.muted, palette.muted),
+            1024 => (palette.muted, palette.muted),
+            2048 => (palette.body, palette.muted),
+            _ => (palette.accent_alt, palette.muted),
         }
     }
 }
@@ -238,7 +239,7 @@ impl Game for Game2048 {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -269,13 +270,13 @@ impl Game for Game2048 {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette) {
         let outer_block = Block::default()
             .title(" 2048 SLIDER ")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL)
             .border_type(BorderType::Double)
-            .border_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
+            .border_style(Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD));
 
         frame.render_widget(outer_block, area);
 
@@ -296,7 +297,7 @@ impl Game for Game2048 {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Gray));
+            .border_style(Style::default().fg(palette.muted));
         
         let board_inner = board_block.inner(board_area);
         frame.render_widget(board_block, board_area);
@@ -317,7 +318,7 @@ impl Game for Game2048 {
 
             for c in 0..4 {
                 let cell_val = self.grid[r][c];
-                let (fg, bg) = Self::get_tile_colors(cell_val);
+                let (fg, bg) = Self::get_tile_colors(cell_val, palette);
                 
                 let tile_block = Block::default()
                     .borders(Borders::ALL)
@@ -366,10 +367,10 @@ impl Game for Game2048 {
 
         let score_content = vec![
             Line::from(vec![
-                Span::styled(" SCORE ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
+                Span::styled(" SCORE ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(vec![
-                Span::styled(format!(" {:06}", self.score), Style::default().fg(Color::White).add_modifier(Modifier::BOLD)),
+                Span::styled(format!(" {:06}", self.score), Style::default().fg(palette.body).add_modifier(Modifier::BOLD)),
             ]),
         ];
         
@@ -379,11 +380,11 @@ impl Game for Game2048 {
         frame.render_widget(score_paragraph, side_layout[0]);
 
         let instruct_content = vec![
-            Line::from(Span::styled("  [↑↓←→] or [WASD]", Style::default().fg(Color::Cyan))),
-            Line::from(Span::styled("  Slide Tiles", Style::default().fg(Color::White))),
+            Line::from(Span::styled("  [↑↓←→] or [WASD]", Style::default().fg(palette.accent))),
+            Line::from(Span::styled("  Slide Tiles", Style::default().fg(palette.body))),
             Line::from(""),
-            Line::from(Span::styled("  [P]   Pause Game", Style::default().fg(Color::Gray))),
-            Line::from(Span::styled("  [Esc] Quit Arcade", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab] Pause Game", Style::default().fg(palette.muted))),
+            Line::from(Span::styled("  [Esc] Quit Arcade", Style::default().fg(palette.muted))),
         ];
         
         let instruct_paragraph = Paragraph::new(instruct_content)
@@ -401,11 +402,11 @@ impl Game for Game2048 {
             frame.render_widget(Clear, pause_area);
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled(" PAUSED ", Style::default().fg(palette.accent_alt).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.accent_alt)));
             frame.render_widget(pause_widget, pause_area);
         } else if self.game_over {
             let go_area = Rect {
@@ -417,14 +418,14 @@ impl Game for Game2048 {
             frame.render_widget(Clear, go_area);
             let go_widget = Paragraph::new(vec![
                 Line::from(""),
-                Line::from(Span::styled(" GAME OVER! ", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))),
+                Line::from(Span::styled(" GAME OVER! ", Style::default().fg(palette.danger).add_modifier(Modifier::BOLD))),
                 Line::from(format!("Final Score: {}", self.score)),
                 Line::from(""),
-                Line::from(Span::styled("Press [R] to retry", Style::default().fg(Color::Green))),
-                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [R] to retry", Style::default().fg(palette.accent))),
+                Line::from(Span::styled("Press [Esc] to exit", Style::default().fg(palette.muted))),
             ])
             .alignment(Alignment::Center)
-            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Red)));
+            .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(palette.danger)));
             frame.render_widget(go_widget, go_area);
         }
     }
