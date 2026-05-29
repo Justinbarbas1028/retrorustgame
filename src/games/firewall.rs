@@ -139,7 +139,7 @@ impl Game for FirewallGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -171,7 +171,7 @@ impl Game for FirewallGame {
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, _palette: &crate::settings::ThemePalette) {
         let outer_block = Block::default()
             .title(format!("  {} CABINET  ", self.title.to_uppercase()))
             .title_alignment(Alignment::Center)
@@ -272,7 +272,7 @@ impl Game for FirewallGame {
             Line::from(Span::styled("  [Space] Jump", Style::default().fg(Color::Gray))),
             Line::from(Span::styled("  [F/Ent] Fire", Style::default().fg(Color::Gray))),
             Line::from(""),
-            Line::from(Span::styled("  [P]     Pause", Style::default().fg(Color::Gray))),
+            Line::from(Span::styled("  [Tab]   Pause", Style::default().fg(Color::Gray))),
             Line::from(Span::styled("  [Esc]   Quit", Style::default().fg(Color::Gray))),
         ];
 
@@ -291,7 +291,7 @@ impl Game for FirewallGame {
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
                 Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(Color::DarkGray))),
             ])
             .alignment(Alignment::Center)
             .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));

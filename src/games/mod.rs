@@ -103,6 +103,7 @@ use std::time::Duration;
 use ratatui::Frame;
 use ratatui::layout::Rect;
 use crossterm::event::KeyCode;
+use crate::settings::ThemePalette;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GameType {
@@ -324,7 +325,7 @@ pub enum GameCommand {
 pub trait Game {
     fn update(&mut self, delta: Duration);
     fn handle_input(&mut self, key: KeyCode) -> GameCommand;
-    fn draw(&self, frame: &mut Frame, area: Rect);
+    fn draw(&self, frame: &mut Frame, area: Rect, palette: &ThemePalette);
     fn get_score(&self) -> u32;
     fn is_game_over(&self) -> bool;
 }

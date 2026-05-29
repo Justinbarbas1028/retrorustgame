@@ -15,6 +15,7 @@ pub struct PrimesGame {
     target: u32,
     player_input: String,
     score: u32,
+    high_score: u32,
     game_over: bool,
     paused: bool,
     time_limit: f32,
@@ -29,6 +30,7 @@ impl PrimesGame {
             target: 0,
             player_input: String::new(),
             score: 0,
+            high_score: 0,
             game_over: false,
             paused: false,
             time_limit: 15.0,
@@ -101,7 +103,7 @@ impl Game for PrimesGame {
             }
         }
 
-        if key == KeyCode::Char('p') || key == KeyCode::Char('P') {
+        if key == KeyCode::Tab {
             self.paused = !self.paused;
             return GameCommand::None;
         }
@@ -114,9 +116,6 @@ impl Game for PrimesGame {
         }
 
         match key {
-            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
-                return GameCommand::Exit;
-            }
             KeyCode::Char(c) => {
                 if c.is_digit(10) {
                     self.player_input.push(c);
@@ -128,13 +127,16 @@ impl Game for PrimesGame {
             KeyCode::Enter => {
                 self.submit();
             }
+            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
+                return GameCommand::Exit;
+            }
             _ => {}
         }
 
         GameCommand::None
     }
 
-    fn draw(&self, frame: &mut Frame, area: Rect) {
+    fn draw(&self, frame: &mut Frame, area: Rect, _palette: &crate::settings::ThemePalette) {
         let outer_block = Block::default()
             .title(format!("  {} SPEED CABINET  ", self.title.to_uppercase()))
             .title_alignment(Alignment::Center)
@@ -209,7 +211,7 @@ impl Game for PrimesGame {
             let pause_widget = Paragraph::new(vec![
                 Line::from(""),
                 Line::from(Span::styled(" PAUSED ", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
-                Line::from(Span::styled("Press 'P' to resume", Style::default().fg(Color::DarkGray))),
+                Line::from(Span::styled("Press [Tab] to resume", Style::default().fg(Color::DarkGray))),
             ])
             .alignment(Alignment::Center)
             .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Yellow)));
