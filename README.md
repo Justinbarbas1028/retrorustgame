@@ -83,60 +83,60 @@ The compiled binary will be placed at `./target/release/rust-project-one` (or `r
 * **Down Arrow (or S)**: Soft drop the active piece (gives extra points).
 * **Spacebar**: Hard drop the piece instantly (gives double points).
 * **C / Shift (or H)**: Hold/Swap active piece.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Quit game and return to the arcade selection launcher.
 
 #### 🔢 2048 Controls
 * **Arrow Keys / WASD**: Slide and merge tiles in that direction.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 💣 Minesweeper Controls
 * **Arrow Keys / WASD**: Move the cursor highlight.
 * **Spacebar / Enter**: Dig and reveal cell contents.
 * **F**: Toggle flag marker (`⚑`) on/off (flagged cells are protected from digs).
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 👽 Space Invaders Controls
 * **Left / Right Arrow (or A / D)**: Move the defender ship.
 * **Spacebar (or W / Up Arrow)**: Fire laser.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 🗡️ Roguelike Crawler Controls
 * **Arrow Keys / WASD**: Move player `@` / Attack adjacent enemies.
 * **Spacebar / Period (`.`)**: Wait a turn (monsters will still move/act).
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 🐍 Snake Controls
 * **Arrow Keys / WASD**: Steer the snake.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 🔤 Wordle Controls
 * **A - Z Keys**: Input letters into active word row cells.
 * **Backspace**: Delete the last input character in the row.
 * **Enter**: Submit your 5-letter guess word.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 🚢 Battleship Controls
 * **Arrow Keys / WASD**: Move ship hover cursor (placement) or targeting crosshair (battle).
 * **R Key**: Rotate ship placement 90 degrees (vertical/horizontal toggle).
 * **Spacebar / Enter**: Place ship (placement phase) or fire weapon salvo (battle phase).
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### 🪓 Hangman Controls
 * **A - Z Keys**: Guess letters.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 #### Tron Controls
 * **Arrow Keys / WASD**: Turn the light cycle without reversing into your own trail.
-* **P**: Pause / Resume.
+* **Tab**: Pause / Resume.
 * **Escape**: Return to the arcade menu.
 
 ---

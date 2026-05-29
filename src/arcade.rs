@@ -422,7 +422,7 @@ impl ArcadeConsole {
             GameType::Battleship => (
                 vec!["  ██████╗  █████╗ ████████╗████████╗██╗     ███████╗", "  ██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝", "  ██████╔╝███████║   ██║      ██║   ██║     █████╗  ", "  ██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  ", "  ██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗"],
                 "A classic grid-based tactical warfare game. Position your battleships on the 10x10 ocean grid and take turns with the AI targeting and firing salvos to sink the enemy fleet.",
-                "Move Cursor: Arrows / WASD  •  Rotate Ship: R  •  Confirm/Fire: Enter/Space  •  Pause: P  •  Quit: Escape",
+                "Move Cursor: Arrows / WASD  •  Rotate Ship: R  •  Confirm/Fire: Enter/Space  •  Pause: Tab  •  Quit: Escape",
             ),
             GameType::Battlestar => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                BATTLESTAR               │", "  └─────────────────────────────────────────┘"],
@@ -542,7 +542,7 @@ impl ArcadeConsole {
             GameType::Game2048 => (
                 vec!["  ██████╗  ██████╗  ██╗  ██╗  ██████╗ ", "  ╚════██╗██╔═══██╗██║  ██║██╔════██╗", "   █████╔╝██║   ██║███████║╚██████╔╝", "  ██╔═══╝ ██║   ██║╚════██║██╔═══██╗", "  ███████╗╚██████╔╝     ██║╚██████╔╝"],
                 "Slide numeric tiles on a 4x4 grid. When two matching values touch, they combine into a double-value tile! Work your way up to make the prestigious 2048 block.",
-                "Slide: Arrow Keys / WASD  •  Pause: P  •  Quit Arcade: Escape",
+                "Slide: Arrow Keys / WASD  •  Pause: Tab  •  Quit Arcade: Escape",
             ),
             GameType::GoFish => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                 GO FISH                 │", "  └─────────────────────────────────────────┘"],
@@ -577,7 +577,7 @@ impl ArcadeConsole {
             GameType::Hangman => (
                 vec!["  ██╗  ██╗ █████╗ ███╗   ██╗ ██████╗███╗   ███╗ █████╗ ███╗   ██╗", "  ██║  ██║██╔══██╗████╗  ██║██╔════╝████╗ ████║██╔══██╗████╗  ██║", "  ██║ █╗ ██║██║   ██║██████╔╝██║  ██║██║     █████╗  ", "  ██║███╗██║██║   ██║██╔══██╗██║  ██║██║     ██╔══╝  ", "  ╚███╔███╔╝╚██████╔╝██║  ██║██████╔╝███████╗███████╗"],
                 "The timeless word-guessing challenge! Guess letters one by one to reveal the secret word. Each incorrect guess adds a piece to the classic ASCII gallows art.",
-                "Guess Letter: A-Z  •  Pause: P  •  Quit Game: Escape",
+                "Guess Letter: A-Z  •  Pause: Tab  •  Quit Game: Escape",
             ),
             GameType::Harmonist => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                HARMONIST                │", "  └─────────────────────────────────────────┘"],
@@ -612,7 +612,7 @@ impl ArcadeConsole {
             GameType::Minesweeper => (
                 vec!["  ███╗   ███╗██╗███╗   ██╗███████╗", "  ████╗ ████║██║████╗  ██║██╔════╝", "  ██╔████╔██║██║██╔██╗ ██║█████╗  ", "  ██║╚██╔╝██║██║██║╚██╗██║██╔══╝  ", "  ██║ ╚═╝ ██║██║██║ ╚████║███████╗"],
                 "A pure logic deduction puzzle. Clean the safe grid cells without setting off any hidden mines. Use flags to pinpoint mines and clear pockets with cascading opens.",
-                "Move Cursor: Arrow Keys / WASD  •  Dig Cell: Space / Enter  •  Toggle Flag: F  •  Pause: P",
+                "Move Cursor: Arrow Keys / WASD  •  Dig Cell: Space / Enter  •  Toggle Flag: F  •  Pause: Tab",
             ),
             GameType::Momodora => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                 MOMODORA                │", "  └─────────────────────────────────────────┘"],
@@ -721,7 +721,7 @@ impl ArcadeConsole {
             GameType::Roguelike => (
                 vec!["  ██████╗  ██████╗  ██████╗ ██╗   ██╗███████╗", "  ██╔══██╗██╔═══██╗██╔════╝ ██║   ██║██╔════╝", "  ██████╔╝██║   ██║██║  ███╗██║   ██║█████╗  ", "  ██╔══██╗██║   ██║██║   ██║██║   ██║██╔══╝  ", "  ██║  ██║╚██████╔╝╚██████╔╝╚██████╔╝███████╗"],
                 "A turn-based mini-RPG dungeon crawler. Wander randomized rooms, gather health potions, find swords/shields, fight goblins/orcs/trolls, and go deep down the stairs.",
-                "Move/Attack: Arrow Keys / WASD  •  Skip Turn: Space / Period  •  Pause: P",
+                "Move/Attack: Arrow Keys / WASD  •  Skip Turn: Space / Period  •  Pause: Tab",
             ),
             GameType::Rot13 => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │              ROT13 DECIPHER             │", "  └─────────────────────────────────────────┘"],
@@ -751,7 +751,7 @@ impl ArcadeConsole {
             GameType::Snake => (
                 vec!["  ██████╗███╗   ██╗ █████╗ ██╗  ██╗███████╗", "  ██╔════╝████╗  ██║██╔══██╗██║  ██║██╔════╝", "  ███████╗██╔██╗ ██║███████║███████║█████╗  ", "  ╚════██║██║╚██╗██║██╔══██║██╔══██║██╔══╝  ", "  ███████║██║ ╚████║██║  ██║██║  ██║███████╗"],
                 "A classic real-time retro arcade game. Control the snake to eat food and grow longer, but avoid crashing into walls or yourself! Includes dynamic speed scaling.",
-                "Move: Arrow Keys / WASD  •  Pause: P  •  Quit Game: Escape",
+                "Move: Arrow Keys / WASD  •  Pause: Tab  •  Quit Game: Escape",
             ),
             GameType::Snscore => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                 SNSCORE                 │", "  └─────────────────────────────────────────┘"],
@@ -771,7 +771,7 @@ impl ArcadeConsole {
             GameType::SpaceInvaders => (
                 vec!["  ███████╗██████╗  █████╗  ██████╗███████╗", "  ██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝", "  ███████╗██████╔╝███████║██║     █████╗  ", "  ╚════██║██╔═══╝ ██╔══██║██║     ██╔══╝  ", "  ███████║██║     ██║  ██║╚██████╗███████╗"],
                 "Retro real-time action shooter! Defend your base ship from swarms of descending invaders. Hide behind bunkers, fire lasers, and survive waves of incoming threats.",
-                "Move Ship: Left/Right Arrow or A/D  •  Shoot Laser: Space / Up Arrow / W  •  Pause: P",
+                "Move Ship: Left/Right Arrow or A/D  •  Shoot Laser: Space / Up Arrow / W  •  Pause: Tab",
             ),
             GameType::Sudoku => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                  SUDOKU                 │", "  └─────────────────────────────────────────┘"],
@@ -786,11 +786,11 @@ impl ArcadeConsole {
             GameType::Term2048 => (
                 vec!["  +-----------------------------------------+", "  |                TERM2048                 |", "  +-----------------------------------------+"],
                 "A terminal-focused 2048 variant. Slide numbered tiles, merge matching values, and chase the highest power-of-two tile you can build.",
-                "Slide: Arrow Keys / WASD  -  Pause: P  -  Quit Arcade: Escape",
+                "Slide: Arrow Keys / WASD  -  Pause: Tab  -  Quit Arcade: Escape",
             ),            GameType::Tetris => (
                 vec!["  ██████╗████████╗██████╗ ██╗███████╗", "  ╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔════╝", "     ██║      ██║   ██████╔╝██║███████╗", "     ██║      ██║   ██╔══██╗██║╚════██║", "     ██║      ██║   ██║  ██║██║███████║"],
                 "A classic real-time tile match game! Fit falling tetrominoes together to clear complete horizontal lines. Features increasing levels, speeds, and block previews.",
-                "Move: Left/Right Arrow  •  Rotate: Up Arrow  •  Soft Drop: Down Arrow  •  Hard Drop: Space  •  Hold: C / Shift  •  Pause: P",
+                "Move: Left/Right Arrow  •  Rotate: Up Arrow  •  Soft Drop: Down Arrow  •  Hard Drop: Space  •  Hold: C / Shift  •  Pause: Tab",
             ),
             GameType::Tetro => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                  TETRO                  │", "  └─────────────────────────────────────────┘"],
@@ -820,7 +820,7 @@ impl ArcadeConsole {
             GameType::Tron => (
                 vec!["  +-----------------------------------------+", "  |                  TRON                   |", "  +-----------------------------------------+"],
                 "A real-time light-cycle duel. Turn sharply, leave an energy trail, and force the red cycle into a wall or path before you crash.",
-                "Turn: Arrow Keys / WASD  -  Pause: P  -  Quit Game: Escape",
+                "Turn: Arrow Keys / WASD  -  Pause: Tab  -  Quit Game: Escape",
             ),            GameType::Vitetris => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                 VITETRIS                │", "  └─────────────────────────────────────────┘"],
                 "Fast-paced real-time retro arcade action! Dodge obstacles, shoot projectiles, time your jumps, and survive to score big.",
@@ -829,7 +829,7 @@ impl ArcadeConsole {
             GameType::Wordle => (
                 vec!["  ██╗    ██╗ ██████╗ ██████╗ ██████╗ ██╗     ███████╗", "  ██║    ██║██╔═══██╗██╔══██╗██╔══██╗██║     ██╔════╝", "  ██║ █╗ ██║██║   ██║██████╔╝██║  ██║██║     █████╗  ", "  ██║███╗██║██║   ██║██╔══██╗██║  ██║██║     ██╔══╝  ", "  ╚███╔███╔╝╚██████╔╝██║  ██║██████╔╝███████╗███████╗"],
                 "Challenge your vocabulary with this 5-letter word game! You have 6 attempts to guess the secret word. Features colorful elimination keyboard grids and letter status indicators.",
-                "Type Letters: A-Z  •  Delete: Backspace  •  Submit Word: Enter  •  Pause: P  •  Quit Game: Escape",
+                "Type Letters: A-Z  •  Delete: Backspace  •  Submit Word: Enter  •  Pause: Tab  •  Quit Game: Escape",
             ),
             GameType::Worm => (
                 vec!["  ┌─────────────────────────────────────────┐", "  │                   WORM                  │", "  └─────────────────────────────────────────┘"],
@@ -1002,8 +1002,9 @@ impl ArcadeConsole {
 
     pub fn draw(&self, frame: &mut Frame, area: Rect) {
         if let Some(game) = &self.active_game {
+            let palette = self.settings.theme.palette();
             // Render active game full-frame
-            game.draw(frame, area);
+            game.draw(frame, area, &palette);
         } else {
             let palette = self.settings.theme.palette();
 
@@ -1291,7 +1292,7 @@ impl ArcadeConsole {
 
     fn draw_settings_overlay(&self, frame: &mut Frame, area: Rect) {
         let palette = self.settings.theme.palette();
-        let popup_area = Self::centered_popup(area, 62, 17);
+        let popup_area = Self::centered_popup(area, 62, 26);
         frame.render_widget(Clear, popup_area);
 
         let block = Block::default()
